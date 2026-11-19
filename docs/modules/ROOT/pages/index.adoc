@@ -1,0 +1,10 @@
+= Services
+:description: FF Logistic as three Spring Boot services behind a gateway.
+
+Three services, `warehousing`, `transportation` and `routing`, each running one domain core from ff-logistic-shared, and a `gateway` that routes the edge's paths to them. The same ports as in the modulith, fulfilled over the network:
+
+* a question to another area is an HTTP call, with a timeout and a fallback,
+* an event goes into the outbox in the same transaction and reaches Kafka after commit; consumers are idempotent,
+* each service applies its own area's migrations to the shared database.
+
+The services start in S1 (xref:ff-logistic::plan.adoc[plan]). The same work in one process: xref:modulith::index.adoc[Modulith].

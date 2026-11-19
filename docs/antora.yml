@@ -1,0 +1,7 @@
+# The services' part of the documentation site (ff-logistic-docs assembles it).
+name: services
+title: Services
+version: ~
+start_page: index.adoc
+nav:
+  - modules/ROOT/nav.adoc
