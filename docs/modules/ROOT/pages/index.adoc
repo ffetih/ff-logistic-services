@@ -7,4 +7,38 @@ Three services, `warehousing`, `transportation` and `routing`, each running one 
 * an event goes into the outbox in the same transaction and reaches Kafka after commit; consumers are idempotent,
 * each service applies its own area's migrations to the shared database.
 
-The services start in S1 (xref:ff-logistic::plan.adoc[plan]). The same work in one process: xref:modulith::index.adoc[Modulith].
+[cols="1,1,3",options="header"]
+|===
+| Path | Port | What
+
+| `contexts/warehousing` | 8082 | The warehousing core with the chassis
+| `contexts/transportation` | 8083 | The transportation core with the chassis
+| `contexts/routing` | 8084 | The routing core with the chassis
+| `gateway` | 8081 | nginx: `/api/v1/wms/**`, `/api/v1/tms/**`, `/api/v1/geo/**` to their service; `/api/v1/me` to transportation
+| `deploy/apps/*` | | Their values for the runtime's chart; the switch deploys them when `active: services`
+|===
+
+[mermaid]
+....
+flowchart LR
+  EDGE(["edge :8081"]) --> GW["gateway<br/>nginx"]
+  GW -->|/api/v1/wms/**| WH[warehousing :8082]
+  GW -->|/api/v1/tms/**, /api/v1/me| TR[transportation :8083]
+  GW -->|/api/v1/geo/**| RO[routing :8084]
+  WH & TR & RO --> PG[("ff_logistics<br/>each its own area's tables")]
+....
+
+The three applications differ only in which core they hold, their port and their name; their `application.yml` files repeat the database and token settings, as each service's configuration is its own. That repetition is one of the costs the comparison counts.
+
+[source,bash]
+----
+./build.sh                                              # after base and shared are installed
+for s in warehousing transportation routing; do
+  docker build -t ghcr.io/ffetih/ff-logistic-services/$s:local contexts/$s
+  k3d image import ghcr.io/ffetih/ff-logistic-services/$s:local -c ff-logistic
+done
+docker build -t ghcr.io/ffetih/ff-logistic-services/gateway:local gateway
+k3d image import ghcr.io/ffetih/ff-logistic-services/gateway:local -c ff-logistic
+----
+
+The same work in one process: xref:modulith::index.adoc[Modulith].

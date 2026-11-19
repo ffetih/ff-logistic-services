@@ -1,0 +1,6 @@
+# The tag of the image imported into the k3d cluster with
+#   docker build -t ghcr.io/ffetih/ff-logistic-services/warehousing:local contexts/warehousing
+#   k3d image import ghcr.io/ffetih/ff-logistic-services/warehousing:local -c ff-logistic
+# CI does not publish this image yet (S2), so nothing rewrites this file.
+image:
+  tag: local

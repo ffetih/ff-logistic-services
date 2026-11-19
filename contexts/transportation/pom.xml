@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.siose.ff</groupId>
+        <artifactId>ff-base-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <!--
+        The transportation area as a process of its own: shared's ff-domain-transportation core, the chassis, and
+        (from S4) the adapters that reach the other areas over the network.
+    -->
+    <groupId>com.siose.ff</groupId>
+    <artifactId>transportation</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>FF Logistic - Services - transportation</name>
+    <description>The transportation area as a Spring Boot service.</description>
+
+    <properties>
+        <ff-domain.version>0.1.0-SNAPSHOT</ff-domain.version>
+    </properties>
+
+    <dependencies>
+        <!-- The business: one area -->
+        <dependency>
+            <groupId>com.siose.ff</groupId>
+            <artifactId>ff-domain-transportation</artifactId>
+            <version>${ff-domain.version}</version>
+        </dependency>
+
+        <!-- The chassis, the same as the modulith's -->
+        <dependency>
+            <groupId>com.siose.ff</groupId>
+            <artifactId>ff-base-app</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.siose.ff</groupId>
+            <artifactId>ff-base-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.siose.ff</groupId>
+            <artifactId>ff-base-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.siose.ff</groupId>
+            <artifactId>ff-base-persistence</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- The jar name the Dockerfile copies, without the version -->
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

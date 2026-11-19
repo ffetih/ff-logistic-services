@@ -1,0 +1,18 @@
+# The gateway on the local k3d cluster. Read after values.yaml, so it wins.
+#
+# The services side's only pods with the edge label: the edge (port 8081) reaches the services
+# through here.
+podLabels:
+  ff-logistic/edge: "true"
+
+# nginx, not a JVM: it starts in a moment and needs a few megabytes.
+probes:
+  startup:
+    periodSeconds: 2
+    failureThreshold: 15
+resources:
+  requests:
+    cpu: 20m
+    memory: 16Mi
+  limits:
+    memory: 64Mi

@@ -1,0 +1,31 @@
+# The chassis (ff-base-app) brings the shared defaults: health groups, probes, virtual threads,
+# schema validation. The datasource and token settings are the same in all three services and in
+# the modulith: the same database, the same identity service. Repeated per service, as a service's
+# configuration is its own.
+server:
+  port: 8084
+
+spring:
+  application:
+    name: routing
+  # The same database as the modulith (decision 3): this service migrates and uses only the
+  # routing area's tables. From the IDE, the cluster's PostgreSQL on NodePort 5432; in the cluster
+  # the chart sets LOGISTICS_DB_* from the postgres Secret.
+  datasource:
+    url: ${LOGISTICS_DB_URL:jdbc:postgresql://localhost:5432/ff_logistics}
+    username: ${LOGISTICS_DB_USERNAME:fflogistics}
+    password: ${LOGISTICS_DB_PASSWORD:fflogisticsDb2026}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Checked here against the identity service's keys; this process never calls Keycloak.
+          jwk-set-uri: ${IDENTITY_JWKS_URI:http://localhost:8085/jwks}
+          issuer-uri: ${IDENTITY_TOKEN_ISSUER:http://localhost:8180/realms/ff-logistics}
+          audiences: ff-logistics-api
+
+ff:
+  security:
+    header-fallback:
+      # Local development only, switched on by the "local" profile (application-local.yml).
+      enabled: false

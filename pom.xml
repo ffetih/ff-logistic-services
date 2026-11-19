@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Aggregator only. Each service's parent is ff-base-parent from ff-logistic-base. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.siose.ff</groupId>
+    <artifactId>ff-logistic-services</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>FF Logistic - Services</name>
+
+    <modules>
+        <module>contexts/warehousing</module>
+        <module>contexts/transportation</module>
+        <module>contexts/routing</module>
+    </modules>
+</project>

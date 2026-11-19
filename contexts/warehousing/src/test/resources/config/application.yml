@@ -1,0 +1,8 @@
+# Test overrides (classpath:/config/application.yml wins over the main file): an in-memory
+# database, migrated by the same area migrations as PostgreSQL.
+spring:
+  datasource:
+    url: jdbc:h2:mem:service;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:

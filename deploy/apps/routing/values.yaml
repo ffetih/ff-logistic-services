@@ -1,0 +1,9 @@
+# The routing service, every environment. Overrides the chart's defaults
+# (ff-logistic-runtime: deploy/charts/ff-service/values.yaml).
+image:
+  repository: ghcr.io/ffetih/ff-logistic-services/routing
+
+containerPort: 8084
+
+service:
+  port: 8084

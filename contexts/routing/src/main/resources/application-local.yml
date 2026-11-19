@@ -1,0 +1,9 @@
+# Runs from the IDE without signing in: X-Tenant-Id stands in for a token. Never in a container.
+#
+#   curl -H 'X-Tenant-Id: ff-eu-freight' localhost:8084/api/v1/me
+ff:
+  security:
+    header-fallback:
+      enabled: true
+      default-roles:
+        - REPORT_VIEWER
