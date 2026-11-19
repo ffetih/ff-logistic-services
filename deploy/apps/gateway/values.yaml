@@ -1,0 +1,9 @@
+# The gateway, every environment. Overrides the chart's defaults
+# (ff-logistic-runtime: deploy/charts/ff-service/values.yaml).
+image:
+  repository: ghcr.io/ffetih/ff-logistic-services/gateway
+
+containerPort: 8081
+
+service:
+  port: 8081

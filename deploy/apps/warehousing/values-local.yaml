@@ -1,0 +1,46 @@
+# The warehousing service on the local k3d cluster. Read after values.yaml, so it wins.
+# Reached only through the gateway; no NodePort and no edge label of its own.
+
+# The area's migrations run in the PreSync Job, for this area only (its own history table,
+# warehousing_flyway_history); the pods only use the schema.
+migration:
+  enabled: true
+
+smokeTest:
+  enabled: true
+  token:
+    url: http://identity:8085/sessions
+    secret: smoke-test-user
+  checks:
+    - {path: /actuator/health/readiness, status: 200, contains: '"status":"UP"'}
+    - {path: /api/v1/me, status: 401}
+    - {path: /api/v1/me, status: 200, token: true, contains: '"tenantId":"ff-eu-freight"'}
+
+# A service is smaller than the modulith: one area.
+resources:
+  requests:
+    cpu: 100m
+    memory: 320Mi
+  limits:
+    memory: 640Mi
+
+# Every variable in one list: Helm replaces lists, it does not merge them.
+env:
+  - name: LOGISTICS_DB_URL
+    value: jdbc:postgresql://postgres:5432/ff_logistics
+  - name: LOGISTICS_DB_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres-credentials
+        key: username
+  - name: LOGISTICS_DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres-credentials
+        key: password
+  - name: IDENTITY_JWKS_URI
+    value: http://identity:8085/jwks
+  - name: IDENTITY_TOKEN_ISSUER
+    value: http://localhost:8180/realms/ff-logistics
+  - name: FF_RELEASE_HEALTHY
+    value: "true"

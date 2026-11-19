@@ -1,0 +1,9 @@
+# The transportation service, every environment. Overrides the chart's defaults
+# (ff-logistic-runtime: deploy/charts/ff-service/values.yaml).
+image:
+  repository: ghcr.io/ffetih/ff-logistic-services/transportation
+
+containerPort: 8083
+
+service:
+  port: 8083
