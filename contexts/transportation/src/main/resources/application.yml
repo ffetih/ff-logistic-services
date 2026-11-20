@@ -54,3 +54,10 @@ ff:
   # schema "transportation", migrated with the area.
   events:
     schema: transportation
+  # Flow 1: where the routing service answers road distances. In the cluster, the chart sets
+  # ROUTING_URL to the routing Service; from the IDE, the routing service on its own port. A leg
+  # waits at most connect + read timeout, then gets the straight-line estimate.
+  routing-client:
+    base-url: ${ROUTING_URL:http://localhost:8084}
+    connect-timeout: PT1S
+    read-timeout: PT2S
