@@ -6,3 +6,9 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+  # Most tests need no broker: events stay inside the service. RouteStopEventsToKafkaTest turns
+  # externalization on, with a broker in the test JVM.
+  modulith:
+    events:
+      externalization:
+        enabled: false
