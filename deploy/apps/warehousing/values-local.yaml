@@ -1,6 +1,24 @@
 # The warehousing service on the local k3d cluster. Read after values.yaml, so it wins.
 # Reached only through the gateway; no NodePort and no edge label of its own.
 
+# Canary with analysis, as on the modulith side, at the size of one service: two pods, so the
+# canary is one pod, half of the traffic, while the analysis reads its release group.
+replicaCount: 2
+
+rollout:
+  enabled: true
+  strategy: canary
+  canary:
+    analysis:
+      enabled: true
+    steps:
+      - setWeight: 50
+      # Three reads of /actuator/health/release on the canary pod, 10 s apart: all UP, or abort
+      - analysis:
+          templates:
+            - templateName: warehousing-release
+      - setWeight: 100
+
 # The area's migrations run in the PreSync Job, for this area only (its own history table,
 # warehousing_flyway_history); the pods only use the schema.
 migration:
