@@ -34,7 +34,7 @@ class WarehousingApplicationTest {
         assertThat(migrations.areas()).extracting(MigrationArea::name).containsExactly("warehousing");
         Integer version = jdbc.queryForObject(
                 "select max(\"version\") from \"warehousing_flyway_history\" where \"type\" = 'SQL'", Integer.class);
-        assertThat(version).isEqualTo(1);
+        assertThat(version).isEqualTo(3);
     }
 
     @Test
