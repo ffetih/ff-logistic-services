@@ -28,6 +28,26 @@ flowchart LR
   WH & TR & RO --> PG[("ff_logistics<br/>each its own area's tables")]
 ....
 
+[[flows]]
+== The flows, over the network
+
+Flow 2 (S4): a delivery in transportation opens an inbound arrival in warehousing.
+
+[mermaid]
+....
+flowchart LR
+  TR["transportation<br/>ShipmentDelivered"] -->|"same transaction"| OB[("transportation.<br/>event_publication")]
+  OB -->|"after commit, keyed by shipment"| K[["Kafka<br/>ff.logistics.tms.shipment-delivered"]]
+  K -->|"group warehousing"| WC["warehousing<br/>messaging.DeliveriesToWarehouses"]
+  WC --> IA["InboundArrivals.open"]
+  WC -.->|"unreadable: at once<br/>failing: after 2 retries"| DLT[["….warehousing.dlt"]]
+....
+
+* *Transportation* owns its topics (`messaging.ShipmentTopics`) and keeps its outbox in the schema `transportation` (ff-base-events). `EVENTS_EXTERNALIZATION_ENABLED=false` keeps the events inside the service.
+* *Warehousing* reads the message into a type of its own (`ShipmentDeliveredMessage`): it does not have transportation's classes, and ignores the fields it does not read. The topic's name and the fields are the contract.
+* Both read the broker from `KAFKA_BOOTSTRAP_SERVERS` (`kafka:9092` in the cluster, `localhost:9094` from the IDE).
+* The tests run a broker in the test JVM (`spring-kafka-test`): what one service sends and the other reads is checked for real, without Docker.
+
 The three applications differ only in which core they hold, their port and their name; their `application.yml` files repeat the database and token settings, as each service's configuration is its own. That repetition is one of the costs the comparison counts.
 
 [source,bash]

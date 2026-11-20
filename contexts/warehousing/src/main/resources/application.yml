@@ -15,6 +15,18 @@ spring:
     url: ${LOGISTICS_DB_URL:jdbc:postgresql://localhost:5432/ff_logistics}
     username: ${LOGISTICS_DB_USERNAME:fflogistics}
     password: ${LOGISTICS_DB_PASSWORD:fflogisticsDb2026}
+  # Kafka: transportation's deliveries come from here (flow 2). In the cluster the chart sets
+  # KAFKA_BOOTSTRAP_SERVERS (kafka:9092); from the IDE, the cluster's broker on localhost:9094.
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+    consumer:
+      # One consumer group per service: every service reads every message once, whatever its pods.
+      group-id: warehousing
+      # A new group starts at the beginning of the topic: no delivery is missed.
+      auto-offset-reset: earliest
+    admin:
+      operation-timeout: 5s
+      close-timeout: 2s
   security:
     oauth2:
       resourceserver:

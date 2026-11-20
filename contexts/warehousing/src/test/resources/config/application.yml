@@ -6,3 +6,11 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+  # Most tests need no broker: the consumer does not start. DeliveriesFromKafkaTest starts it,
+  # with a broker in the test JVM.
+  kafka:
+    listener:
+      auto-startup: false
+    # Nor does it create its dead-letter topic on a broker that is not there.
+    admin:
+      auto-create: false
