@@ -29,3 +29,14 @@ ff:
     header-fallback:
       # Local development only, switched on by the "local" profile (application-local.yml).
       enabled: false
+  # The routing area's planner. Road distances come from the straight-line estimate (haversine x
+  # 1.24) unless ROUTING_ROAD_MATRIX=osrm and an OSRM server is named; the cluster runs none. Longer
+  # routes, and any with a time window, are ordered by Timefold within the solver limits.
+  routing:
+    road-matrix: ${ROUTING_ROAD_MATRIX:haversine}
+    osrm:
+      base-url: ${ROUTING_OSRM_URL:http://localhost:5000}
+    max-stops: 99
+    nearest-neighbour-max-stops: 8
+    solver-limit: PT1S
+    solver-unimproved-limit: PT0.2S
