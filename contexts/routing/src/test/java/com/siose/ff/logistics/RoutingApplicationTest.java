@@ -34,7 +34,7 @@ class RoutingApplicationTest {
         assertThat(migrations.areas()).extracting(MigrationArea::name).containsExactly("routing");
         Integer version = jdbc.queryForObject(
                 "select max(\"version\") from \"routing_flyway_history\" where \"type\" = 'SQL'", Integer.class);
-        assertThat(version).isEqualTo(1);
+        assertThat(version).isEqualTo(2);
     }
 
     @Test
