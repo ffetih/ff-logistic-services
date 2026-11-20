@@ -60,5 +60,8 @@ env:
     value: http://identity:8085/jwks
   - name: IDENTITY_TOKEN_ISSUER
     value: http://localhost:8180/realms/ff-logistics
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    # The cluster's broker, where its events go (flow 2)
+    value: kafka:9092
   - name: FF_RELEASE_HEALTHY
     value: "true"
