@@ -37,6 +37,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 @SpringBootTest(properties = {
         "spring.modulith.events.externalization.enabled=true",
         "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        "spring.kafka.admin.auto-create=true",
         // A database of its own: this context's outbox rows must not mix with the other contexts'.
         "spring.datasource.url=jdbc:h2:mem:transportation_kafka;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
 })

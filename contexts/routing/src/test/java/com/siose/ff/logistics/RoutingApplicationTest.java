@@ -1,6 +1,7 @@
 package com.siose.ff.logistics;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,10 +32,14 @@ class RoutingApplicationTest {
 
     @Test
     void holdsOnlyItsOwnAreaAndMigratesIt() {
-        assertThat(migrations.areas()).extracting(MigrationArea::name).containsExactly("routing");
+        // Its area, and its own outbox, in the schema "routing" (decision 12).
+        assertThat(migrations.areas()).extracting(MigrationArea::name, MigrationArea::schema)
+                .containsExactly(tuple("outbox", "routing"), tuple("routing", null));
         Integer version = jdbc.queryForObject(
                 "select max(\"version\") from \"routing_flyway_history\" where \"type\" = 'SQL'", Integer.class);
-        assertThat(version).isEqualTo(2);
+        assertThat(version).isEqualTo(3);
+        assertThat(jdbc.queryForObject("select max(\"version\") from routing.\"outbox_flyway_history\""
+                + " where \"type\" = 'SQL'", Integer.class)).isEqualTo(1);
     }
 
     @Test

@@ -15,6 +15,27 @@ spring:
     url: ${LOGISTICS_DB_URL:jdbc:postgresql://localhost:5432/ff_logistics}
     username: ${LOGISTICS_DB_USERNAME:fflogistics}
     password: ${LOGISTICS_DB_PASSWORD:fflogisticsDb2026}
+  # Kafka: completed route stops go out from here (flow 3). In the cluster the chart sets
+  # KAFKA_BOOTSTRAP_SERVERS (kafka:9092); from the IDE, the cluster's broker on localhost:9094.
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+    admin:
+      # Topics are created at the start. Without a broker the start is held 5 s, not 40 s: the
+      # service starts anyway, and the outbox sends its events once the broker is back.
+      operation-timeout: 5s
+      close-timeout: 2s
+    producer:
+      # Wait for every in-sync replica: an acknowledged event survives a broker that fails.
+      acks: all
+      properties:
+        # Give up a send after 10 s without a broker instead of 60 s. The event stays open in
+        # routing.event_publication, and the outbox sends it again.
+        max.block.ms: 10000
+  modulith:
+    events:
+      externalization:
+        # The events marked @Externalized (RouteStopCompleted) go to Kafka.
+        enabled: ${EVENTS_EXTERNALIZATION_ENABLED:true}
   security:
     oauth2:
       resourceserver:
@@ -25,6 +46,10 @@ spring:
           audiences: ff-logistics-api
 
 ff:
+  # This service's outbox (ff-base-events, decision 12): the event publication registry in the
+  # schema "routing", migrated with the area.
+  events:
+    schema: routing
   security:
     header-fallback:
       # Local development only, switched on by the "local" profile (application-local.yml).

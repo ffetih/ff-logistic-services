@@ -62,3 +62,6 @@ env:
     value: http://localhost:8180/realms/ff-logistics
   - name: FF_RELEASE_HEALTHY
     value: "true"
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    # The cluster's broker, where completed route stops go (flow 3)
+    value: kafka:9092

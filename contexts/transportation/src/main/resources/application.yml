@@ -19,6 +19,15 @@ spring:
   # KAFKA_BOOTSTRAP_SERVERS (kafka:9092); from the IDE, the cluster's broker on localhost:9094.
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+    # Flow 3: routing's completed stops are read here.
+    consumer:
+      # One consumer group per service: every service reads every message once, whatever its pods.
+      group-id: transportation
+      # A new group starts at the beginning of the topic: no completed stop is missed.
+      auto-offset-reset: earliest
+      # The values are read as bytes, and the JSON is turned into the listener's parameter type:
+      # Spring Modulith's Kafka support sets both for this service (kafka-json.properties, and a
+      # JSON message converter for every @KafkaListener).
     admin:
       # Topics are created at the start. Without a broker the start is held 5 s, not 40 s: the
       # service starts anyway, and the outbox sends its events once the broker is back.

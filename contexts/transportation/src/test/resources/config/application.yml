@@ -12,6 +12,13 @@ spring:
     events:
       externalization:
         enabled: false
+  # Nor is the consumer started (StopsFromKafkaTest starts it, with a broker in the test JVM), nor
+  # its dead-letter topic created on a broker that is not there.
+  kafka:
+    listener:
+      auto-startup: false
+    admin:
+      auto-create: false
 # Flow 1: no routing service in the tests unless one names its own (LegDistanceFlowTest). Port 1
 # refuses at once, so a road leg gets the estimate without waiting.
 ff:
