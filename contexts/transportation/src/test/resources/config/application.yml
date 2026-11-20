@@ -12,3 +12,8 @@ spring:
     events:
       externalization:
         enabled: false
+# Flow 1: no routing service in the tests unless one names its own (LegDistanceFlowTest). Port 1
+# refuses at once, so a road leg gets the estimate without waiting.
+ff:
+  routing-client:
+    base-url: http://127.0.0.1:1

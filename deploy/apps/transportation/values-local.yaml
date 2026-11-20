@@ -63,5 +63,8 @@ env:
   - name: KAFKA_BOOTSTRAP_SERVERS
     # The cluster's broker, where its events go (flow 2)
     value: kafka:9092
+  - name: ROUTING_URL
+    # Flow 1: road distances, from the routing Service directly, not through the gateway
+    value: http://routing:8084
   - name: FF_RELEASE_HEALTHY
     value: "true"

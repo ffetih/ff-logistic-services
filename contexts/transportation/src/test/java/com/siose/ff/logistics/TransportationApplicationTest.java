@@ -37,7 +37,7 @@ class TransportationApplicationTest {
                 .containsExactly(tuple("outbox", "transportation"), tuple("transportation", null));
         Integer version = jdbc.queryForObject(
                 "select max(\"version\") from \"transportation_flyway_history\" where \"type\" = 'SQL'", Integer.class);
-        assertThat(version).isEqualTo(2);
+        assertThat(version).isEqualTo(3);
         assertThat(jdbc.queryForObject("select max(\"version\") from transportation.\"outbox_flyway_history\""
                 + " where \"type\" = 'SQL'", Integer.class)).isEqualTo(1);
     }
