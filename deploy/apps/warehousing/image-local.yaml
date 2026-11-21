@@ -2,4 +2,4 @@
 # (ff-logistic-runtime/.github/workflows/java-publish.yml). For an image built and
 # loaded with k3d image import instead, set the tag to "local" here by hand.
 image:
-  tag: 42b07b87d0ff03e87f7b7902072d831a7ae073b2
+  tag: 6ae9bbb414a5fb73d5f9b4b784f0eafb4ce93b3a
