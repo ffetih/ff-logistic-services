@@ -68,3 +68,21 @@ env:
     value: http://routing:8084
   - name: FF_RELEASE_HEALTHY
     value: "true"
+  - name: STORAGE_PROVIDER
+    # Documents in RustFS (S05-05): the application talks to its Service, links point to the
+    # host port 9000 (k3d maps it to RustFS's NodePort), which a browser or curl can reach
+    value: s3
+  - name: STORAGE_S3_ENDPOINT
+    value: http://rustfs-svc:9000
+  - name: STORAGE_S3_PUBLIC_ENDPOINT
+    value: http://localhost:9000
+  - name: STORAGE_S3_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: rustfs-credentials
+        key: RUSTFS_ACCESS_KEY
+  - name: STORAGE_S3_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: rustfs-credentials
+        key: RUSTFS_SECRET_KEY
