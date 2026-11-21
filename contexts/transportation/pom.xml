@@ -42,6 +42,11 @@
             <groupId>com.siose.ff</groupId>
             <artifactId>ff-base-web</artifactId>
         </dependency>
+        <!-- Documents (S05-05): the S3 client, so ff-base-storage wires its S3 adapter (RustFS in the cluster) -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.siose.ff</groupId>
             <artifactId>ff-base-security</artifactId>

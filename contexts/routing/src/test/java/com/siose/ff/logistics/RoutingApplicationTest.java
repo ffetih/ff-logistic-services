@@ -37,7 +37,7 @@ class RoutingApplicationTest {
                 .containsExactly(tuple("outbox", "routing"), tuple("routing", null));
         Integer version = jdbc.queryForObject(
                 "select max(\"version\") from \"routing_flyway_history\" where \"type\" = 'SQL'", Integer.class);
-        assertThat(version).isEqualTo(3);
+        assertThat(version).isEqualTo(4);
         assertThat(jdbc.queryForObject("select max(\"version\") from routing.\"outbox_flyway_history\""
                 + " where \"type\" = 'SQL'", Integer.class)).isEqualTo(1);
     }
