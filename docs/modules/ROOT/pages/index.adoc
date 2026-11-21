@@ -48,6 +48,11 @@ flowchart LR
 * Both read the broker from `KAFKA_BOOTSTRAP_SERVERS` (`kafka:9092` in the cluster, `localhost:9094` from the IDE).
 * The tests run a broker in the test JVM (`spring-kafka-test`): what one service sends and the other reads is checked for real, without Docker.
 
+Flows 1 and 3 (S5), between routing and transportation:
+
+* *Flow 1, a question*: transportation's `distances.RoutingDistances` fills the port `DistanceLookup` with `GET http://routing:8084/api/v1/geo/distance`, relaying the caller's token, with 1 s to connect and 2 s to answer. No answer in time, and the core falls back to the straight-line estimate; the leg records which (`ROUTING` or `ESTIMATE`) (xref:ff-logistic::architecture.adoc#flow-1[on each side]).
+* *Flow 3, an event*: routing keeps its own outbox (schema `routing`) and publishes `RouteStopCompleted` to `ff.logistics.geo.route-stop-completed`, keyed by route plan. Transportation's `messaging.CompletedStops` reads it in the group `transportation`, with its own dead-letter topic (`….transportation.dlt`) (xref:ff-logistic::architecture.adoc#flow-3[on each side]).
+
 The three applications differ only in which core they hold, their port and their name; their `application.yml` files repeat the database and token settings, as each service's configuration is its own. That repetition is one of the costs the comparison counts.
 
 [source,bash]
