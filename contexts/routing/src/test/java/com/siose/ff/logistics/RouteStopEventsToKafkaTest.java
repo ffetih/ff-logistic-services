@@ -6,6 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
+import com.siose.ff.contracts.EventContract;
 import com.siose.ff.logistics.routing.RouteStopCompleted;
 import java.time.Duration;
 import java.util.Map;
@@ -29,7 +30,8 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 /**
  * Flow 3 leaves the routing service: a completed stop goes through the outbox to its Kafka topic,
- * keyed by the route plan, with the shipment it delivers. Read back from a broker in the test JVM.
+ * keyed by the route plan, with the shipment it delivers. Read back from a broker in the test JVM,
+ * and checked against its contract (ff-contracts, S06-03), as the modulith's test checks its own.
  */
 @SpringBootTest(properties = {
         "spring.modulith.events.externalization.enabled=true",
@@ -91,6 +93,7 @@ class RouteStopEventsToKafkaTest {
             assertThat((String) JsonPath.read(record.value(), "$.tenantId")).isEqualTo("t-kafka");
             assertThat((String) JsonPath.read(record.value(), "$.shipmentNumber")).isEqualTo("SHP-10042");
             assertThat((String) JsonPath.read(record.value(), "$.receivedBy")).isEqualTo("Ayse Demir");
+            EventContract.of(RouteStopCompleted.TOPIC).verify(record.key(), record.value());
         }
         // Sent, so the outbox row is completed.
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertThat(jdbc.queryForObject(

@@ -7,11 +7,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
+import com.siose.ff.contracts.EventContract;
 import com.siose.ff.logistics.transportation.ShipmentDelivered;
+import com.siose.ff.logistics.transportation.ShipmentProgressed;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,9 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
  * registry stores the event with the delivery, in the schema {@code transportation}, and sends it to
  * Kafka after the commit, keyed by the shipment, as JSON with what the warehouse needs. The broker
  * runs inside the test JVM, so what a consumer reads is checked for real.
+ *
+ * <p>Every message read back is checked against its contract (ff-contracts, S06-03): the modulith's
+ * test runs the same check, so a reader cannot tell which side sent a message.
  */
 @SpringBootTest(properties = {
         "spring.modulith.events.externalization.enabled=true",
@@ -75,6 +81,8 @@ class ShipmentEventsToKafkaTest {
                 .andReturn().getResponse().getContentAsString();
         String id = JsonPath.read(body, "$.id");
 
+        mockMvc.perform(post("/api/v1/tms/shipments/" + id + "/pickup").with(planner())).andExpect(status().isOk());
+        mockMvc.perform(post("/api/v1/tms/shipments/" + id + "/departure").with(planner())).andExpect(status().isOk());
         mockMvc.perform(post("/api/v1/tms/shipments/" + id + "/delivery").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"receivedBy\": \"Gate 3\"}").with(planner()))
                 .andExpect(status().isOk());
@@ -90,6 +98,15 @@ class ShipmentEventsToKafkaTest {
             assertThat((String) JsonPath.read(record.value(), "$.tenantId")).isEqualTo("t-kafka");
             assertThat((String) JsonPath.read(record.value(), "$.destinationGln")).isEqualTo(GLN);
             assertThat((String) JsonPath.read(record.value(), "$.sscc")).isEqualTo("106141411234567897");
+            EventContract.of(ShipmentDelivered.TOPIC).verify(record.key(), record.value());
+        }
+        // The pickup and the departure: one message each, the same contract check.
+        try (Consumer<String, String> consumer = new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(),
+                new StringDeserializer()).createConsumer()) {
+            consumer.subscribe(java.util.List.of(ShipmentProgressed.TOPIC));
+            ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(15), 2);
+            assertThat(records.count()).isEqualTo(2);
+            records.forEach(record -> EventContract.of(ShipmentProgressed.TOPIC).verify(record.key(), record.value()));
         }
         // Sent, so the outbox row is completed.
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertThat(jdbc.queryForObject(
