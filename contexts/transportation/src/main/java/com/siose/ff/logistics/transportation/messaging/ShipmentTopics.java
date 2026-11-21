@@ -16,8 +16,8 @@ import org.springframework.kafka.config.TopicBuilder;
  * none by itself. Not in the migration Job ({@code migrate}), which should not wait for a broker,
  * and only when the events are sent at all.
  *
- * <p>Only in the service: the modulith keeps its events in its JVM (S6 sends them out from both
- * sides).
+ * <p>The modulith creates the same topics with the same partitions (its {@code EventTopics}, S6):
+ * whichever side runs first creates a topic, and the other finds it.
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "spring.modulith.events.externalization.enabled", havingValue = "true")

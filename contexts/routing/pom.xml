@@ -124,6 +124,13 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- The event contracts (ff-contracts): what this service sends is checked against them -->
+        <dependency>
+            <groupId>com.siose.ff</groupId>
+            <artifactId>ff-contracts</artifactId>
+            <version>${ff-domain.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- A Kafka broker inside the test JVM: what leaves this service is read back for real -->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
