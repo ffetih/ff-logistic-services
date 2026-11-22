@@ -66,6 +66,8 @@ ff:
       # Where links point, when it differs from the endpoint: in the cluster the application
       # reaches rustfs-svc:9000, a name a client outside cannot resolve.
       public-endpoint: ${STORAGE_S3_PUBLIC_ENDPOINT:}
+      # browser-origins defaults to the console (8090) and Vite (5173). The first link tells
+      # the bucket, so a browser preflight from those origins is allowed.
       access-key: ${STORAGE_S3_ACCESS_KEY:}
       secret-key: ${STORAGE_S3_SECRET_KEY:}
       timeout: PT5S
